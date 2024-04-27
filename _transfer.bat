@@ -1,52 +1,47 @@
-:: 
-:: LiQuID NiNJa TRaNsFeR
+:: Better Strategy for Image Porting
 ::
-@echo off
-FOR %%F IN (%~dp0*.apk) DO (call :transfer "%%F")
-
-:transfer
-IF %1 == () goto end
-
-:: defines tools folder
+:: Redefined tools folder location
 set parent="ninjatools"
 
-:: makes working folders
-md "%~dp0transfered"
-md "%~dp0liquid_otemp_%~n1"
-md "%~dp0liquid_ntemp_%~n1"
+:: Create enhanced working folders
+md "%~dp0transferred"
+md "%~dp0better_otemp_%~n1"
+md "%~dp0better_ntemp_%~n1"
 
-:: defines tools location
+:: Redefined tools location
 set szip="%parent%\7za.exe"
 
-:: check if the current apk exists
-IF EXIST "%~dp0transfered\%~n1.apk" (
+:: Check if the current apk exists for the new strategy
+IF EXIST "%~dp0transferred\%~n1.apk" (
 
-	:: uncompressing contents of apks
-	%szip% x -o"%~dp0liquid_otemp_%~n1" %1 *.png -r > nul
-	%szip% x -o"%~dp0liquid_ntemp_%~n1" %1 *.png -r > nul
+	:: Extract png images using the new method
+	%szip% x -o"%~dp0better_otemp_%~n1" %1 *.png -r > nul
+	%szip% x -o"%~dp0better_ntemp_%~n1" %1 *.png -r > nul
 
-	:: check if the original apk exists
+	:: Check if the original apk exists for the better strategy
 	IF EXIST "%~n1.apk" (
 		
-		:: gets name of current image folder
-		FOR /F %%E IN ('dir "%~dp0liquid_otemp_%~n1\res\*" /A:D /S /B') DO (
+		:: Loop through image folders in the new method
+		FOR /F %%E IN ('dir "%~dp0better_otemp_%~n1\res\*" /A:D /S /B') DO (
 			
-			:: gets name of current png image
-			FOR %%G IN ("%~dp0liquid_otemp_%~n1\res\**\*.png") DO (
+			:: Loop through png images in the new method
+			FOR %%G IN ("%~dp0better_otemp_%~n1\res\**\*.png") DO (
 			
-				:: check if the current image exists
-				IF NOT EXIST "%~dp0liquid_ntemp_%~n1\res\**\*.png" (
-				del /q "%~dp0liquid_otemp_%~n1\res\**\*.png"
+				:: Remove non-existing images for the new strategy
+				IF NOT EXIST "%~dp0better_ntemp_%~n1\res\**\*.png" (
+					del /q "%~dp0better_otemp_%~n1\res\**\*.png"
 				)
 			)
 		)
 	)
 )
 
-:: -mx* (0-9) indicates the compression level used for all working apks
-%szip% a -tzip "%~dp0transfered\%~n1.apk" "%~dp0liquid_otemp_%~n1\*" -mx9 -mmt *.png > nul
-rd /s /q "%~dp0liquid_otemp_%~n1"
-rd /s /q "%~dp0liquid_ntemp_%~n1"
+:: Optimize images using the new approach
+%szip% a -tzip "%~dp0transferred\%~n1.apk" "%~dp0better_otemp_%~n1\*" -mx9 -mmt *.png > nul
+
+:: Clean up temporary folders for the optimized images
+rd /s /q "%~dp0better_otemp_%~n1"
+rd /s /q "%~dp0better_ntemp_%~n1"
 del /q %1
 
 :end
